@@ -1,19 +1,23 @@
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 class TrieNode {
   private Map<Character, TrieNode> children;
+  private Set<String> derivatives;
   private String content;
   private boolean isWord;
 
   public TrieNode(String content) {
     this.content = content;
     children = new HashMap<>();
+    derivatives = new HashSet<>();
   }
 
   public Map<Character, TrieNode> getChildren() {
@@ -31,13 +35,23 @@ class TrieNode {
   public boolean getIsWord() {
     return isWord;
   }
+
+  public void addDerivative(String derivative) {
+    derivatives.add(derivative);
+  }
+
+  public Set<String> getDerivatives() {
+    return derivatives;
+  }
 }
 
 class Trie {
   private TrieNode root;
+  private Map<String, List<String>> partialFindings;
 
   public Trie() {
     root = new TrieNode("*");
+    partialFindings = new HashMap<>();
   }
 
   public void insert(String word) {
@@ -47,6 +61,7 @@ class Trie {
       String content = word.substring(0, index + 1);
       current =
         current.getChildren().computeIfAbsent(word.charAt(index), c -> new TrieNode(content));
+      current.addDerivative(word);
     }
 
     current.setIsWord(true);
@@ -67,28 +82,18 @@ class Trie {
     return current.getIsWord();
   }
 
-  public List<String> findPartial(String fragment) {
+  public Set<String> findPartial(String fragment) {
     TrieNode current = root;
-    List<String> predictions = new ArrayList<>();
     for (char letter : fragment.toCharArray()) {
       TrieNode node = current.getChildren().get(letter);
       if (node == null) {
-        return predictions;
+        return new HashSet<>();
       }
 
       current = node;
     }
 
-    getWordsFromNode(current, predictions);
-    return predictions;
-  }
-
-  private void getWordsFromNode(TrieNode node, final List<String> words) {
-    if (node.getIsWord()) {
-      words.add(node.getContent());
-    }
-
-    node.getChildren().values().stream().forEach(childNode -> getWordsFromNode(childNode, words));
+    return current.getDerivatives();
   }
 }
 
@@ -96,6 +101,11 @@ public class Solution {
   public static void main(String args[]){
     Trie trie = new Trie();
     try {
+      List<String> results = new ArrayList<>();
+      List<String> expected =
+          Files.lines(Paths.get(ClassLoader.getSystemResource("./output02.txt").toURI()))
+               .collect(Collectors.toList());
+
       Files.lines(Paths.get(ClassLoader.getSystemResource("./input02.txt").toURI())).forEach(line -> {
         String[] operation = line.split(" ");
         String op = operation[0];
@@ -107,10 +117,27 @@ public class Solution {
             break;
 
           case "find":
-            System.out.println(trie.findPartial(contact).size());
+            results.add(String.valueOf(trie.findPartial(contact).size()));
             break;
         }
+
       });
+
+      if (results.size() != expected.size()) {
+        System.out.println("FAILURE");
+      } else {
+        for (int index = 0; index < results.size(); index++) {
+          String currentResult = results.get(index);
+          StringBuilder output = new StringBuilder();
+          output.append(currentResult);
+
+          if (!currentResult.equals(expected.get(index))) {
+            output.append(" FAILURE");
+          }
+
+          System.out.println(output.toString());
+        }
+      }
     } catch (Exception e ) {
       e.printStackTrace();
     }
