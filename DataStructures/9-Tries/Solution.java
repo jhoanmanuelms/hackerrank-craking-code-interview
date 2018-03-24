@@ -95,22 +95,24 @@ class Trie {
 public class Solution {
   public static void main(String args[]){
     Trie trie = new Trie();
-    trie.insert("car");
-    trie.insert("cat");
-    trie.insert("dog");
-    trie.insert("day");
-    trie.insert("programming");
-    trie.insert("programmer");
-    trie.insert("program");
-    trie.insert("progress");
+    try {
+      Files.lines(Paths.get(ClassLoader.getSystemResource("./input02.txt").toURI())).forEach(line -> {
+        String[] operation = line.split(" ");
+        String op = operation[0];
+        String contact = operation[1];
 
-    System.out.println("find chapter -> " + trie.find("chapter")); // false
-    System.out.println("find cat -> " + trie.find("cat")); // true
-    System.out.println("find dog -> " + trie.find("dog")); // true
-    System.out.println("find days -> " + trie.find("days")); // false
-    System.out.println("findPartial prog -> " + trie.findPartial("prog")); // false
-    System.out.println("findPartial car -> " + trie.findPartial("car")); // false
-    System.out.println("findPartial d -> " + trie.findPartial("d")); // false
-    System.out.println("findPartial do -> " + trie.findPartial("do")); // false*/
+        switch(op) {
+          case "add":
+            trie.insert(contact);
+            break;
+
+          case "find":
+            System.out.println(trie.findPartial(contact).size());
+            break;
+        }
+      });
+    } catch (Exception e ) {
+      e.printStackTrace();
+    }
   }
 }
