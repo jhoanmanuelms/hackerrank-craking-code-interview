@@ -3,97 +3,59 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 class TrieNode {
   private Map<Character, TrieNode> children;
-  private Set<String> derivatives;
-  private String content;
-  private boolean isWord;
+  private int derivativesCount;
 
-  public TrieNode(String content) {
-    this.content = content;
+  public TrieNode() {
     children = new HashMap<>();
-    derivatives = new HashSet<>();
   }
 
   public Map<Character, TrieNode> getChildren() {
     return children;
   }
 
-  public String getContent() {
-    return content;
+  public void increaseDerivativesCount() {
+    derivativesCount++;
   }
 
-  public void setIsWord(boolean isWord) {
-    this.isWord = isWord;
-  }
-
-  public boolean getIsWord() {
-    return isWord;
-  }
-
-  public void addDerivative(String derivative) {
-    derivatives.add(derivative);
-  }
-
-  public Set<String> getDerivatives() {
-    return derivatives;
+  public int getDerivativesCount() {
+    return derivativesCount;
   }
 }
 
 class Trie {
   private TrieNode root;
-  private Map<String, List<String>> partialFindings;
 
   public Trie() {
-    root = new TrieNode("*");
-    partialFindings = new HashMap<>();
+    root = new TrieNode();
   }
 
   public void insert(String word) {
     TrieNode current = root;
  
     for (int index = 0; index < word.length(); index++) {
-      String content = word.substring(0, index + 1);
       current =
-        current.getChildren().computeIfAbsent(word.charAt(index), c -> new TrieNode(content));
-      current.addDerivative(word);
+        current.getChildren().computeIfAbsent(word.charAt(index), c -> new TrieNode());
+      current.increaseDerivativesCount();
     }
-
-    current.setIsWord(true);
   }
 
-  public boolean find(String word) {
+  public int findPartialCount(String fragment) {
     TrieNode current = root;
-
-    for (char letter : word.toCharArray()) {
-      TrieNode node = current.getChildren().get(letter);
+    for (int index = 0; index < fragment.length(); index++) {
+      TrieNode node = current.getChildren().get(fragment.charAt(index));
       if (node == null) {
-        return false;
+        return 0;
       }
 
       current = node;
     }
 
-    return current.getIsWord();
-  }
-
-  public Set<String> findPartial(String fragment) {
-    TrieNode current = root;
-    for (char letter : fragment.toCharArray()) {
-      TrieNode node = current.getChildren().get(letter);
-      if (node == null) {
-        return new HashSet<>();
-      }
-
-      current = node;
-    }
-
-    return current.getDerivatives();
+    return current.getDerivativesCount();
   }
 }
 
@@ -103,10 +65,10 @@ public class Solution {
     try {
       List<String> results = new ArrayList<>();
       List<String> expected =
-          Files.lines(Paths.get(ClassLoader.getSystemResource("./output02.txt").toURI()))
+          Files.lines(Paths.get(ClassLoader.getSystemResource("./output07.txt").toURI()))
                .collect(Collectors.toList());
 
-      Files.lines(Paths.get(ClassLoader.getSystemResource("./input02.txt").toURI())).forEach(line -> {
+      Files.lines(Paths.get(ClassLoader.getSystemResource("./input07.txt").toURI())).forEach(line -> {
         String[] operation = line.split(" ");
         String op = operation[0];
         String contact = operation[1];
@@ -117,7 +79,7 @@ public class Solution {
             break;
 
           case "find":
-            results.add(String.valueOf(trie.findPartial(contact).size()));
+            results.add(String.valueOf(trie.findPartialCount(contact)));
             break;
         }
 
@@ -128,10 +90,11 @@ public class Solution {
       } else {
         for (int index = 0; index < results.size(); index++) {
           String currentResult = results.get(index);
+          String expectedResult = results.get(index);
           StringBuilder output = new StringBuilder();
-          output.append(currentResult);
+          output.append(currentResult).append(" ").append(expectedResult);
 
-          if (!currentResult.equals(expected.get(index))) {
+          if (!currentResult.equals(expectedResult)) {
             output.append(" FAILURE");
           }
 
