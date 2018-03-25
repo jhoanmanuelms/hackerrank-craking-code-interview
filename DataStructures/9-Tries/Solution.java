@@ -37,17 +37,17 @@ class Trie {
   public void insert(String word) {
     TrieNode current = root;
  
-    for (int index = 0; index < word.length(); index++) {
+    for (char letter : word.toCharArray()) {
       current =
-        current.getChildren().computeIfAbsent(word.charAt(index), c -> new TrieNode());
+        current.getChildren().computeIfAbsent(letter, c -> new TrieNode());
       current.increaseDerivativesCount();
     }
   }
 
   public int findPartialCount(String fragment) {
     TrieNode current = root;
-    for (int index = 0; index < fragment.length(); index++) {
-      TrieNode node = current.getChildren().get(fragment.charAt(index));
+    for (char letter : fragment.toCharArray()) {
+      TrieNode node = current.getChildren().get(letter);
       if (node == null) {
         return 0;
       }
