@@ -50,16 +50,30 @@ public class BalancedBrackets {
       bracketsStack.push(character);
     }
 
-    return true;
+    return bracketsStack.empty();
   }
 
   public static void main(String args[]) {
     try {
-      Path testInput = Paths.get(ClassLoader.getSystemResource("TestData5/input02.txt").toURI());
+      Path testInput = Paths.get(ClassLoader.getSystemResource("TestData5/input04.txt").toURI());
+      Path testOutput = Paths.get(ClassLoader.getSystemResource("TestData5/output04.txt").toURI());
       List<String> testData = Utils.readLines(testInput);
+      List<String> expectedResults = Utils.readLines(testOutput);
 
-      testData.stream().forEach(input -> System.out.println(isBalanced(input)));
-    } catch (URISyntaxException e) {
+      for (int index = 0; index < testData.size(); index++) {
+        String expression = testData.get(index);
+        String expectedResult = expectedResults.get(index);
+        String currentResult = isBalanced(expression) ? "YES" : "NO";
+        StringBuilder consoleOutput = new StringBuilder();
+        consoleOutput.append(currentResult).append(" ").append(expectedResult);
+
+        if (!expectedResult.equals(currentResult)) {
+          consoleOutput.append(" FAILURE ----> ").append(expression);
+        }
+
+        System.out.println(consoleOutput.toString());
+      }
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
