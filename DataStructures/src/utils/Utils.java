@@ -7,20 +7,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Utils {
   public static List<String> readLines(String path) {
-    List<String> lines = new ArrayList<>();
     try {
       Path filePath = Paths.get(ClassLoader.getSystemResource(path).toURI());
-      Files.lines(filePath).forEach(line -> lines.add(line));
+      return Files.lines(filePath).collect(Collectors.toList());
     } catch (IOException e) {
       e.printStackTrace();
     } catch (URISyntaxException e) {
       e.printStackTrace();
     }
 
-    return lines;
+    return new ArrayList<>();
   }
 
   public static void assertResults(List<String> testData, List<String> expectedResults, List<String> results) {

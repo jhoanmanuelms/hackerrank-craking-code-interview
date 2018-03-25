@@ -1,3 +1,5 @@
+import utils.Utils;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -62,47 +64,28 @@ class Trie {
 public class Solution {
   public static void main(String args[]){
     Trie trie = new Trie();
-    try {
-      List<String> results = new ArrayList<>();
-      List<String> expected =
-          Files.lines(Paths.get(ClassLoader.getSystemResource("TestData/output07.txt").toURI()))
-               .collect(Collectors.toList());
+    List<String> testData = Utils.readLines("TestData9/input07.txt");
+    List<String> expectedResults = Utils.readLines("TestData9/output07.txt");
+    List<String> results = new ArrayList<>();
+    List<String> findOperationData = new ArrayList<>();
 
-      Files.lines(Paths.get(ClassLoader.getSystemResource("TestData/input07.txt").toURI())).forEach(line -> {
-        String[] operation = line.split(" ");
-        String op = operation[0];
-        String contact = operation[1];
+    testData.stream().forEach(line -> {
+      String[] operation = line.split(" ");
+      String op = operation[0];
+      String contact = operation[1];
 
-        switch(op) {
-          case "add":
-            trie.insert(contact);
-            break;
+      switch(op) {
+        case "add":
+          trie.insert(contact);
+          break;
 
-          case "find":
-            results.add(String.valueOf(trie.findPartialCount(contact)));
-            break;
-        }
-
-      });
-
-      if (results.size() != expected.size()) {
-        System.out.println("FAILURE");
-      } else {
-        for (int index = 0; index < results.size(); index++) {
-          String currentResult = results.get(index);
-          String expectedResult = results.get(index);
-          StringBuilder output = new StringBuilder();
-          output.append(currentResult).append(" ").append(expectedResult);
-
-          if (!currentResult.equals(expectedResult)) {
-            output.append(" FAILURE");
-          }
-
-          System.out.println(output.toString());
-        }
+        case "find":
+          findOperationData.add(contact);
+          results.add(String.valueOf(trie.findPartialCount(contact)));
+          break;
       }
-    } catch (Exception e ) {
-      e.printStackTrace();
-    }
+    });
+
+    Utils.assertResults(findOperationData, expectedResults, results);
   }
 }
