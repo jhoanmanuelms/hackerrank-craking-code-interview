@@ -1,4 +1,8 @@
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -36,7 +40,7 @@ public class BalancedBrackets {
 
     for (char character : expression.toCharArray()) {
       if (validator.isBracketClosing(character)) {
-        if (!validator.validateBracket(bracketsStack.pop(), character)) {
+        if (bracketsStack.empty() || !validator.validateBracket(bracketsStack.pop(), character)) {
           return false;
         } else {
           continue;
@@ -50,16 +54,13 @@ public class BalancedBrackets {
   }
 
   public static void main(String args[]) {
-    System.out.println(isBalanced("[]{}()")); // true
-    System.out.println(isBalanced("[({})]{}()")); // true
-    System.out.println(isBalanced("({(){}[]})[]")); // true
-    System.out.println(isBalanced("{[()]}")); // true
-    System.out.println(isBalanced("{[(])}")); // false
-    System.out.println(isBalanced("{{[[(())]]}}")); // true
-    System.out.println(isBalanced("{()[][{}]}")); // true
-    System.out.println(isBalanced("({}{[]})({)}")); // false
-    System.out.println(isBalanced("()[]")); // true
-    System.out.println(isBalanced("[()][{}]{[({})[]]}")); // true
-    System.out.println(isBalanced("((){)}")); // false
+    try {
+      Path testInput = Paths.get(ClassLoader.getSystemResource("TestData5/input02.txt").toURI());
+      List<String> testData = Utils.readLines(testInput);
+
+      testData.stream().forEach(input -> System.out.println(isBalanced(input)));
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
   }
 }
