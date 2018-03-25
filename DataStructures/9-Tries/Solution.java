@@ -65,10 +65,10 @@ public class Solution {
     try {
       List<String> results = new ArrayList<>();
       List<String> expected =
-          Files.lines(Paths.get(ClassLoader.getSystemResource("./output07.txt").toURI()))
+          Files.lines(Paths.get(ClassLoader.getSystemResource("TestData/output07.txt").toURI()))
                .collect(Collectors.toList());
 
-      Files.lines(Paths.get(ClassLoader.getSystemResource("./input07.txt").toURI())).forEach(line -> {
+      Files.lines(Paths.get(ClassLoader.getSystemResource("TestData/input07.txt").toURI())).forEach(line -> {
         String[] operation = line.split(" ");
         String op = operation[0];
         String contact = operation[1];
