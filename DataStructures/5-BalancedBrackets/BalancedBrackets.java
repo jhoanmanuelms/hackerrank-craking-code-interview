@@ -1,6 +1,7 @@
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,27 +55,11 @@ public class BalancedBrackets {
   }
 
   public static void main(String args[]) {
-    try {
-      Path testInput = Paths.get(ClassLoader.getSystemResource("TestData5/input04.txt").toURI());
-      Path testOutput = Paths.get(ClassLoader.getSystemResource("TestData5/output04.txt").toURI());
-      List<String> testData = Utils.readLines(testInput);
-      List<String> expectedResults = Utils.readLines(testOutput);
+      List<String> testData = Utils.readLines("TestData5/input04.txt");
+      List<String> expectedResults = Utils.readLines("TestData5/output04.txt");
+      List<String> results = new ArrayList<>();
 
-      for (int index = 0; index < testData.size(); index++) {
-        String expression = testData.get(index);
-        String expectedResult = expectedResults.get(index);
-        String currentResult = isBalanced(expression) ? "YES" : "NO";
-        StringBuilder consoleOutput = new StringBuilder();
-        consoleOutput.append(currentResult).append(" ").append(expectedResult);
-
-        if (!expectedResult.equals(currentResult)) {
-          consoleOutput.append(" FAILURE ----> ").append(expression);
-        }
-
-        System.out.println(consoleOutput.toString());
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+      testData.stream().forEach(data -> results.add(isBalanced(data) ? "YES" : "NO"));
+      Utils.assertResults(testData, expectedResults, results);
   }
 }
