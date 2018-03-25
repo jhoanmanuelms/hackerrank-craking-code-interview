@@ -61,7 +61,7 @@ class Trie {
   }
 }
 
-public class Solution {
+public class Tries {
   public static void main(String args[]){
     Trie trie = new Trie();
     List<String> testData = Utils.readLines("TestData9/input07.txt");
