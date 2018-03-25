@@ -1,55 +1,70 @@
+import utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 class MyQueue<T> {
   private Stack<T> in;
   private Stack<T> out;
-  private T front;
 
   public <T> MyQueue() {
     in = new Stack<>();
     out = new Stack<>();
-    front = null;
   }
 
   public void enqueue(T element) {
     in.push(element);
-
-    if (front == null) {
-      front = element;
-    }
   }
 
   public T dequeue() {
-    T dequeued;
-    if (out.empty()) {
+    pour();
+    return out.pop();
+  }
+
+  public T peek() {
+    pour();
+    return out.peek();
+  }
+
+  private void pour() {
+    if (out.empty() && !in.empty()) {
       while (!in.empty()) {
         out.push(in.pop());
       }
     }
-
-    dequeued = out.pop();
-    front = out.empty() && in.empty() ? null : out.peek();
-
-    return dequeued;
-  }
-
-  public T peek() {
-    return front;
   }
 }
 
 public class TwoStacks {
   public static void main(String args[]) {
     MyQueue<Integer> queue = new MyQueue<>();
-    queue.enqueue(42);
-    queue.dequeue();
-    queue.enqueue(14);
-    System.out.println(queue.peek());
-    queue.enqueue(28);
-    System.out.println(queue.peek());
-    queue.enqueue(60);
-    queue.enqueue(78);
-    queue.dequeue();
-    queue.dequeue();
+    List<String> testData = Utils.readLines("TestData6/input02.txt");
+    List<String> expectedResults = Utils.readLines("TestData6/output02.txt");
+    List<String> results = new ArrayList<>();
+
+    testData.stream().forEach(line -> {
+      String[] operation = line.split(" ");
+      String op = operation[0];
+      String data = operation.length > 1 ? operation[1] : "";
+
+      switch(op) {
+        case "1":
+          queue.enqueue(Integer.valueOf(data));
+          break;
+
+        case "2":
+          queue.dequeue();
+          break;
+
+        case "3":
+          results.add(String.valueOf(queue.peek()));
+          break;
+      }
+    });
+
+    // The test data is hard to determine for this case since it's the first executed insertion.
+    // If needed it can be tracked but it was not necessary for this exercise.
+    Utils.assertResults(results, expectedResults, results);
   }
 }
