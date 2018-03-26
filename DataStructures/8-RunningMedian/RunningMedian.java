@@ -1,4 +1,8 @@
+import utils.Utils;
+
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -34,11 +38,11 @@ public class RunningMedian {
   }
 
   public static void main(String args[]) {
-    System.out.println(addValue(12));
-    System.out.println(addValue(4));
-    System.out.println(addValue(5));
-    System.out.println(addValue(3));
-    System.out.println(addValue(8));
-    System.out.println(addValue(7));
+    List<String> testData = Utils.readLines("TestData8/input00.txt");
+    List<String> expectedResults = Utils.readLines("TestData8/output00.txt");
+    List<String> results = new ArrayList<>();
+
+    testData.stream().forEach(value -> results.add(String.valueOf(addValue(Integer.valueOf(value)))));
+    Utils.assertResults(testData, expectedResults, results);
   }
 }
