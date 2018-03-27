@@ -1,27 +1,53 @@
 import utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 
 class MediumsHeap {
-  private int size = 0;
-  private int[] items;
+  private PriorityQueue<Integer> secondHalf = new PriorityQueue<>();
+  private PriorityQueue<Integer> firstHalf = new PriorityQueue<>((value1, value2) -> {
+    if (value1 == value2) return 0;
 
-  public void add(int item) {
-    items[size] = item;
-    size++;
-    Arrays.parallelSort(items, 0, size);
-  }
+    return value1 < value2 ? 1 : -1;
+  });
 
-
-  public double calculateMedian() {
-    int middle = size / 2;
-    if (size % 2 == 0) {
-      return ((double) (items[middle] + items[middle - 1]) / 2);
+  public void add(Integer value) {
+    if (firstHalf.isEmpty() || value < firstHalf.peek()) {
+      firstHalf.add(value);
+    } else {
+      secondHalf.add(value);
     }
 
-    return items[middle];
+    balanceHeaps();
+  }
+
+  public double calculateMedian() {
+    PriorityQueue<Integer> biggerHeap = getBiggerHeap();
+    PriorityQueue<Integer> smallerHeap = getSmallerHeap();
+
+    if (biggerHeap.size() == smallerHeap.size()) {
+      return ((double)(biggerHeap.peek() + smallerHeap.peek())) / 2;
+    } else {
+      return (double)(biggerHeap.peek());
+    }
+  }
+
+  private void balanceHeaps() {
+    PriorityQueue<Integer> biggerHeap = getBiggerHeap();
+    PriorityQueue<Integer> smallerHeap = getSmallerHeap();
+
+    if (biggerHeap.size() - smallerHeap.size() > 1) {
+      smallerHeap.add(biggerHeap.poll());
+    }
+  }
+
+  private PriorityQueue<Integer> getBiggerHeap() {
+    return firstHalf.size() > secondHalf.size() ? firstHalf : secondHalf;
+  }
+
+  private PriorityQueue<Integer> getSmallerHeap() {
+    return firstHalf.size() > secondHalf.size() ? secondHalf : firstHalf;
   }
 }
 
@@ -36,6 +62,7 @@ public class RunningMedian {
       heap.add(Integer.valueOf(value));
       results.add(String.valueOf(heap.calculateMedian()));
     });
-    Utils.assertResults(testData, expectedResults, results);
+
+    Utils.assertResults(results, expectedResults, results);
   }
 }
