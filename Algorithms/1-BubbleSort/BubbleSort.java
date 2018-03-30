@@ -13,7 +13,7 @@ public class BubbleSort {
       }
     }
 
-    System.out.println("Array is sorted in " + swaps + " swaps");
+    System.out.println("Array is sorted in " + swaps + " swaps.");
     System.out.println("First Element: " + array[0]);
     System.out.println("Last Element: " + array[size - 1]);
   }
