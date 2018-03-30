@@ -1,5 +1,9 @@
+import utils.AlgorithmsUtils;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 class Player {
   String name;
@@ -14,10 +18,6 @@ class Player {
 class Checker implements Comparator<Player> {
   @Override
   public int compare(Player player1, Player player2) {
-    if (player1.name.equals(player2.name)) {
-      return 0;
-    }
-
     if (player1.score > player2.score) {
       return -1;
     } else if (player1.score == player2.score) {
@@ -31,13 +31,16 @@ class Checker implements Comparator<Player> {
 public class SortComparator {
   public static void main(String args[]) {
     Checker checker = new Checker();
-    Player[] players = new Player[5];
-    players[0] = new Player("amy", 100);
-    players[1] = new Player("david", 100);
-    players[2] = new Player("heraldo", 50);
-    players[3] = new Player("aakansha", 75);
-    players[4] = new Player("aleksa", 150);
+    List<Player> playersList = new ArrayList<>();
+    List<String> testData = AlgorithmsUtils.readLines("TestData2/input02.txt");
+    Player[] players = new Player[testData.size()];
 
+    testData.stream().forEach(playerData -> {
+      String[] data = playerData.split(" ");
+      playersList.add(new Player(data[0], Integer.valueOf(data[1])));
+    });
+
+    players = playersList.toArray(players);
     Arrays.sort(players, checker);
     for(int index = 0; index < players.length; index++){
       System.out.printf("%s %s\n", players[index].name, players[index].score);
