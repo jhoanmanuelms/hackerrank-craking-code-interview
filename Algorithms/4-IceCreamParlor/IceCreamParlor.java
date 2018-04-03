@@ -1,8 +1,11 @@
+import utils.AlgorithmsUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class IceCreamParlor {
   private static Map<Integer, List<Integer>> costsMap = new HashMap<>();
@@ -46,7 +49,7 @@ public class IceCreamParlor {
     for (int index = startFrom; index < costs.length; index++) {
       currentCost = costs[index];
       if ((initialCost + currentCost) == pool) {
-        int flavor1 = costsMap.get(initialCost).get(0);;
+        int flavor1 = costsMap.get(initialCost).get(0);
         int flavor2 =
           initialCost == currentCost ?
           costsMap.get(currentCost).get(1) :
@@ -61,18 +64,30 @@ public class IceCreamParlor {
   }
 
   public static void main(String args[]) {
-    int[] testCosts = { 1, 4, 5, 3, 2 };
-    int[] testCosts2 = { 2, 2, 4, 3 };
-    int testPool = 4;
+    List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData4/input-1.txt");
+    int trips = -1;
+    int pool = -1;
+    int flavors = -1;
+    int[] costs = { - 1 };
+    for (int index = 0; index < testData.size(); index++) {
+      String line = testData.get(index);
+      if (index == 0) {
+        trips = Integer.valueOf(line);
+        continue;
+      }
 
-    populateCostsMap(testCosts);
-    int [] filteredCosts = filterPool(testPool, testCosts);
-    expendPool(0, testPool, filteredCosts);
+      if (index % 3 == 0) {
+        costs = Stream.of(line.split(" ")).mapToInt(cost -> Integer.parseInt(cost)).toArray();
+        break;
+      } else if (index % 2 == 0) {
+        flavors = Integer.valueOf(line);
+      } else {
+        pool = Integer.valueOf(line);
+      }
+    }
 
-
-    costsMap.clear();
-    populateCostsMap(testCosts2);
-    filteredCosts = filterPool(testPool, testCosts2);
-    expendPool(0, testPool, filteredCosts);
+    populateCostsMap(costs);
+    int [] filteredCosts = filterPool(pool, costs);
+    expendPool(0, pool, filteredCosts);
   }
 }
