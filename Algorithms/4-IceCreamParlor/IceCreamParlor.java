@@ -9,17 +9,16 @@ import java.util.stream.Stream;
 
 public class IceCreamParlor {
   private static List<String> results = new ArrayList<>();
-  private static Map<Integer, List<Integer>> costsMap = new HashMap<>();
+  private static Map<Integer, int[]> costsMap = new HashMap<>();
 
   private static void populateCostsMap(int[] costs) {
     costsMap.clear();
     for (int index = 0; index < costs.length; index++) {
       int cost = costs[index];
       if (costsMap.containsKey(cost)) {
-        costsMap.get(cost).add(index + 1);
+        costsMap.get(cost)[1] = index + 1;
       } else {
-        List<Integer> idsForCost = new ArrayList<>();
-        idsForCost.add(index + 1);
+        int[] idsForCost = { index + 1, -1 };
         costsMap.put(cost, idsForCost);
       }
     }
@@ -30,8 +29,8 @@ public class IceCreamParlor {
   }
 
   private static void displayFlavors(int cost1, int cost2) {
-    int flavor1 = costsMap.get(cost1).get(0);
-    int flavor2 = cost1 == cost2 ? costsMap.get(cost2).get(1) : costsMap.get(cost2).get(0);
+    int flavor1 = costsMap.get(cost1)[0];
+    int flavor2 = cost1 == cost2 ? costsMap.get(cost2)[1] : costsMap.get(cost2)[0];
     StringBuilder response = new StringBuilder();
 
     if (flavor1 < flavor2) {
