@@ -26,11 +26,11 @@ public class AlgorithmsUtils {
   public static void assertResults(List<String> testData, List<String> expectedResults, List<String> results) {
     for (int index = 0; index < testData.size(); index++) {
       Object currentData = testData.get(index);
-      Object expectedResult = expectedResults.get(index);
-      Object currentResult = results.get(index);
+      Object expectedResult = expectedResults.get(index).trim();
+      Object currentResult = results.get(index).trim();
 
       StringBuilder consoleOutput = new StringBuilder();
-      consoleOutput.append(currentResult).append(" ").append(expectedResult);
+      consoleOutput.append(currentResult).append(" | ").append(expectedResult);
 
       if (!expectedResult.equals(currentResult)) {
         consoleOutput.append(" FAILURE ----> ").append(currentData);

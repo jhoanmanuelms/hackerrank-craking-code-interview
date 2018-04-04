@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class IceCreamParlor {
+  private static List<String> results = new ArrayList<>();
   private static Map<Integer, List<Integer>> costsMap = new HashMap<>();
 
   private static void populateCostsMap(int[] costs) {
@@ -31,8 +32,15 @@ public class IceCreamParlor {
   private static void displayFlavors(int cost1, int cost2) {
     int flavor1 = costsMap.get(cost1).get(0);
     int flavor2 = cost1 == cost2 ? costsMap.get(cost2).get(1) : costsMap.get(cost2).get(0);
+    StringBuilder response = new StringBuilder();
 
-    System.out.println(flavor1 + " " + flavor2);
+    if (flavor1 < flavor2) {
+      response.append(flavor1).append(" ").append(flavor2);
+    } else {
+      response.append(flavor2).append(" ").append(flavor1);
+    }
+
+    results.add(response.toString());
   }
 
   private static void expendPool(int pool, int[] costs) {
@@ -54,7 +62,9 @@ public class IceCreamParlor {
   }
 
   public static void main(String args[]) {
+    List<String> data = new ArrayList<>();
     List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData4/input00.txt");
+    List<String> expectedResults = AlgorithmsUtils.readLines("AlgorithmsTestData4/output00.txt");
     int pool = -1;
     int[] costs;
     int index = 0;
@@ -66,6 +76,7 @@ public class IceCreamParlor {
 
         case 1:
           pool = Integer.valueOf(line);
+          data.add(line);
           index++;
           break;
 
@@ -82,5 +93,7 @@ public class IceCreamParlor {
           break;
       }
     }
+
+    AlgorithmsUtils.assertResults(data, expectedResults, results);
   }
 }
