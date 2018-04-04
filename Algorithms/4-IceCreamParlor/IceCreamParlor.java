@@ -11,6 +11,7 @@ public class IceCreamParlor {
   private static Map<Integer, List<Integer>> costsMap = new HashMap<>();
 
   private static void populateCostsMap(int[] costs) {
+    costsMap.clear();
     for (int index = 0; index < costs.length; index++) {
       int cost = costs[index];
       if (costsMap.containsKey(cost)) {
@@ -24,70 +25,62 @@ public class IceCreamParlor {
   }
 
   private static int[] filterPool(int pool, int[] costs) {
-    Arrays.sort(costs);
-    int left = 0;
-    int right = costs.length - 1;
-    int middle = (left + ((left + right) / 2));
-    int middleCost = costs[middle];
-    do {
-      if (pool > middleCost) {
-        right = middle;
-      } else {
-        left = middle + 1;
-      }
-
-      middle = (left + ((left + right) / 2));
-      middleCost = costs[middle];
-    }while (middleCost > pool);
-
-    return Arrays.copyOfRange(costs, left, right + 1);
+    return Arrays.stream(costs).filter(cost -> cost < pool).sorted().toArray();
   }
 
-  private static void expendPool(int startFrom, int pool, int[] costs) {
-    int currentCost;
-    int initialCost = costs[startFrom];
-    for (int index = startFrom; index < costs.length; index++) {
-      currentCost = costs[index];
-      if ((initialCost + currentCost) == pool) {
-        int flavor1 = costsMap.get(initialCost).get(0);
-        int flavor2 =
-          initialCost == currentCost ?
-          costsMap.get(currentCost).get(1) :
-          costsMap.get(currentCost).get(0);
+  private static void displayFlavors(int cost1, int cost2) {
+    int flavor1 = costsMap.get(cost1).get(0);
+    int flavor2 = cost1 == cost2 ? costsMap.get(cost2).get(1) : costsMap.get(cost2).get(0);
 
-        System.out.println(flavor1 + " " + flavor2);
-        return;
+    System.out.println(flavor1 + " " + flavor2);
+  }
+
+  private static void expendPool(int pool, int[] costs) {
+    int index1 = 0;
+    int index2 = costs.length - 1;
+    int guess = costs[index1] + costs[index2];
+
+    while (guess != pool) {
+      if (guess < pool) {
+        index1++;
+      } else {
+        index2--;
       }
+
+      guess = costs[index1] + costs[index2];
     }
 
-    expendPool(startFrom + 1, pool, costs);
+    displayFlavors(costs[index1], costs[index2]);
   }
 
   public static void main(String args[]) {
-    List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData4/input-1.txt");
-    int trips = -1;
+    List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData4/input00.txt");
     int pool = -1;
-    int flavors = -1;
-    int[] costs = { - 1 };
-    for (int index = 0; index < testData.size(); index++) {
-      String line = testData.get(index);
-      if (index == 0) {
-        trips = Integer.valueOf(line);
-        continue;
-      }
+    int[] costs;
+    int index = 0;
+    for(String line : testData) {
+      switch (index) {
+        case 0:
+          index++;
+          continue;
 
-      if (index % 3 == 0) {
-        costs = Stream.of(line.split(" ")).mapToInt(cost -> Integer.parseInt(cost)).toArray();
-        break;
-      } else if (index % 2 == 0) {
-        flavors = Integer.valueOf(line);
-      } else {
-        pool = Integer.valueOf(line);
+        case 1:
+          pool = Integer.valueOf(line);
+          index++;
+          break;
+
+        case 2:
+          index++;
+          break;
+
+        case 3:
+          costs = Stream.of(line.split(" ")).mapToInt(cost -> Integer.parseInt(cost)).toArray();
+          populateCostsMap(costs);
+          int[] filteredCosts = filterPool(pool, costs);
+          expendPool(pool, filteredCosts);
+          index = 1;
+          break;
       }
     }
-
-    populateCostsMap(costs);
-    int [] filteredCosts = filterPool(pool, costs);
-    expendPool(0, pool, filteredCosts);
   }
 }
