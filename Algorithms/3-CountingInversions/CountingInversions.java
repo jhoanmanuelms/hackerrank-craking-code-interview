@@ -1,75 +1,59 @@
 import java.util.Arrays;
 
 public class CountingInversions {
-  private static long inversions = 0;
+  public static long countInversions(int[] array){
+    int size = array.length;
 
-  public static long countInversions(int[] array) {
-    inversions = 0;
-    mergeSort(array, new int[array.length], 0, array.length - 1);
+    // Base Case
+    if(size <= 1) {
+      return 0;
+    }
+
+    // Recursive Case
+    int middle = size >> 1;
+    int[] left = Arrays.copyOfRange(array, 0, middle);
+    int[] right = Arrays.copyOfRange(array, middle, array.length);
+    long inversions = countInversions(left) + countInversions(right);
+
+    int range = size - middle;
+    int leftIndex = 0;
+    int rightIndex = 0;
+    for(int i = 0; i < size; i++) {
+      if(
+          leftIndex < middle
+              && (
+              rightIndex >= range || left[leftIndex] <= right[rightIndex]
+          )
+          ) {
+        array[i] = left[leftIndex++];
+        inversions += rightIndex;
+      }
+      else if(rightIndex < range) {
+        array[i] = right[rightIndex++];
+      }
+    }
 
     return inversions;
   }
 
-  public static void mergeSort(int[] array, int[] temp, int leftStart, int rightEnd) {
-    if (leftStart >= rightEnd) {
-      return;
-    }
-
-    int middle = (leftStart + rightEnd) / 2;
-    mergeSort(array, temp, leftStart, middle);
-    mergeSort(array, temp, middle + 1, rightEnd);
-    mergeHalves(array, temp, leftStart, rightEnd);
-  }
-
-  public static void mergeHalves(int[] array, int[] temp, int leftStart, int rightEnd) {
-    int leftEnd = (rightEnd + leftStart) / 2;
-    int rightStart = leftEnd + 1;
-    int size = rightEnd - leftStart + 1;
-
-    int left = leftStart;
-    int right = rightStart;
-    int index = leftStart;
-
-    while (left <= leftEnd && right <= rightEnd) {
-      if (array[left] <= array[right]) {
-        temp[index] = array[left];
-        left++;
-      } else {
-        temp[index] = array[right];
-        right++;
-        inversions++;
-      }
-      index++;
-    }
-
-    System.arraycopy(array, left, temp, index, leftEnd - left + 1);
-    System.arraycopy(array, right, temp, index, rightEnd - right + 1);
-    System.arraycopy(temp, leftStart, array, leftStart, size);
+  private static void printArray(int[] array) {
+    final StringBuilder printer = new StringBuilder("Sorted Array -> [ ");
+    Arrays.stream(array).forEach(num -> printer.append(num).append(" "));
+    printer.append("]");
+    System.out.println(printer.toString());
   }
 
   public static void main(String args[]) {
-    final StringBuilder printer = new StringBuilder();
     int[] testArray = { 2, 1, 3, 1, 2 };
-    long inversionsResult = countInversions(testArray);
-
-    Arrays.stream(testArray).forEach(num -> printer.append(num).append(" "));
-    System.out.println(printer.toString());
-    System.out.println("Inversions -> " + inversionsResult);
+    printArray(testArray);
+    System.out.println("Inversions -> " + countInversions(testArray));
 
     int[] testArray2 = { 1, 1, 1, 2, 2 };
-    inversionsResult = countInversions(testArray2);
+    printArray(testArray2);
+    System.out.println("Inversions -> " + countInversions(testArray2));
 
-    final StringBuilder printer2 = new StringBuilder();
-    Arrays.stream(testArray2).forEach(num -> printer2.append(num).append(" "));
-    System.out.println(printer2.toString());
-    System.out.println("Inversions -> " + inversionsResult);
-
-    final StringBuilder printer3 = new StringBuilder();
     int[] testArray3 = { 14, 7, 23, 72, 1, 11, 9, 2 };
-    inversionsResult = countInversions(testArray3);
-
-    Arrays.stream(testArray3).forEach(num -> printer3.append(num).append(" "));
-    System.out.println(printer3.toString());
-    System.out.println("Inversions -> " + inversionsResult);
+    printArray(testArray3);
+    System.out.println("Inversions -> " + countInversions(testArray3));
   }
 }
