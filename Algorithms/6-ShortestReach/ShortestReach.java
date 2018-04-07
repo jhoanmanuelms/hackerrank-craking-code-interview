@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 class Node {
   private int value;
@@ -30,15 +29,17 @@ class Node {
   }
 }
 
-class Tree {
+class Graph {
   private Map<Integer, Node> nodes;
 
-  public Tree(int length) {
+  public Graph(int length) {
     nodes = new HashMap<>();
-    IntStream.rangeClosed(1, length).forEach(value -> nodes.put(value, new Node(value)));
+    for (int i = 1; i <= length; i++) {
+      nodes.put(i, new Node(i));
+    }
   }
 
-  public void connect(int from, int to) {
+  public void addEdge(int from, int to) {
     nodes.get(from).addChild(new Node(to));
     nodes.get(to).addChild(new Node(from));
   }
@@ -58,21 +59,32 @@ class Tree {
     return path;
   }
 
-  public void printPathToValue(int from, int to) {
-    int path = pathToValue(from, to);
-    path = path == 0 ? -1 : path;
-    System.out.println(String.format("From %d to %d the path is %d", from, to, pathToValue(from, to)));
+  public void shortestReach(int from) {
+    int size = nodes.size();
+    StringBuilder reaches = new StringBuilder();
+
+    for (int index = 1; index <= size; index++) {
+      if (index != from) {
+        int path = pathToValue(from, index);
+        reaches.append(path == 0 ? -1 : path).append(" ");
+      }
+    }
+
+    System.out.println(reaches.toString());
   }
 }
 
 public class ShortestReach {
   public static void main(String args[]) {
-    Tree tree = new Tree(4);
-    tree.connect(1, 2);
-    tree.connect(1, 3);
+    Graph tree = new Graph(4);
+    tree.addEdge(1, 2);
+    tree.addEdge(1, 3);
 
-    tree.printPathToValue(1, 2);
-    tree.printPathToValue(1, 3);
-    tree.printPathToValue(1, 4);
+    tree.shortestReach(1);
+
+    Graph tree2 = new Graph(3);
+    tree2.addEdge(2, 3);
+
+    tree2.shortestReach(2);
   }
 }
