@@ -9,7 +9,8 @@ enum Coordinate {
   SOUTH,
   SOUTHWEST,
   WEST,
-  NORTHWEST
+  NORTHWEST,
+  CENTER
 }
 class Soil {
   private int x;
@@ -47,15 +48,15 @@ class Soil {
 
 class Conqueror {
   private Soil[][] terrain;
-  private int width;
-  private int height;
+  private int maxX;
+  private int maxY;
   private int biggestExtension;
 
-  public Conqueror(int[][] map, int width, int height) {
+  public Conqueror(int[][] map, int maxX, int maxY) {
     biggestExtension = -1;
-    this.width = width;
-    this.height = height;
-    terrain = prepareTerrain(map, width, height);
+    this.maxX = maxX;
+    this.maxY = maxY;
+    terrain = prepareTerrain(map, maxX, maxY);
   }
 
   public int getBiggestExtension() {
@@ -63,14 +64,13 @@ class Conqueror {
   }
 
   public void conquer() {
-    for (int index1 = 0; index1 < width; index1++) {
-      for (int index2 = 0; index2 < height; index2++) {
-        Soil currentSoil = terrain[index1][index2];
+    for (int xIndex = 0; xIndex < maxX; xIndex++) {
+      for (int yIndex = 0; yIndex < maxY; yIndex++) {
+        Soil currentSoil = terrain[xIndex][yIndex];
         if (currentSoil.getValue() == 1 && !currentSoil.isVisited()) {
-          currentSoil.visit();
-          int currentSoilExtension = conquerRegion(index1, index2) + 1;
+          int currentSoilExtension = conquerRegion(xIndex, yIndex);
           System.out.println(String.format(
-            "Current region starting at [%d, %d] has an extension of %d", index1, index2, currentSoilExtension));
+            "Current region starting at [%d, %d] has an extension of %d", xIndex, yIndex, currentSoilExtension));
 
           biggestExtension = currentSoilExtension > biggestExtension ? currentSoilExtension : biggestExtension;
         }
@@ -106,12 +106,13 @@ class Conqueror {
 
   private Map<Coordinate, Soil> getAdjacent(int x, int y) {
     Map<Coordinate, Soil> adjacents = new HashMap<>();
+    adjacents.put(Coordinate.CENTER, terrain[x][y]);
     adjacents.put(Coordinate.NORTH, x - 1 >= 0 ? terrain[x - 1][y] : null);
-    adjacents.put(Coordinate.NORTHEAST, x - 1 >= 0 && y + 1 < width ? terrain[x -1][y + 1] : null);
-    adjacents.put(Coordinate.EAST, y + 1 < width  ? terrain[x][y + 1] : null);
-    adjacents.put(Coordinate.SOUTHEAST, x + 1 < height && y + 1 < width ? terrain[x + 1][y + 1] : null);
-    adjacents.put(Coordinate.SOUTH, x + 1 < height ? terrain[x + 1][y] : null);
-    adjacents.put(Coordinate.SOUTHWEST, x + 1 < height && y - 1 >= 0 ? terrain[x + 1][y - 1] : null);
+    adjacents.put(Coordinate.NORTHEAST, x - 1 >= 0 && y + 1 < maxY ? terrain[x -1][y + 1] : null);
+    adjacents.put(Coordinate.EAST, y + 1 < maxY  ? terrain[x][y + 1] : null);
+    adjacents.put(Coordinate.SOUTHEAST, x + 1 < maxX && y + 1 < maxY ? terrain[x + 1][y + 1] : null);
+    adjacents.put(Coordinate.SOUTH, x + 1 < maxX ? terrain[x + 1][y] : null);
+    adjacents.put(Coordinate.SOUTHWEST, x + 1 < maxX && y - 1 >= 0 ? terrain[x + 1][y - 1] : null);
     adjacents.put(Coordinate.WEST, y - 1 >= 0 ? terrain[x][y - 1] : null);
     adjacents.put(Coordinate.NORTHWEST, x - 1 >= 0 && y - 1 >= 0 ? terrain[x -1][y - 1] : null);
 
@@ -132,13 +133,14 @@ class Conqueror {
 
 public class ConnectedCell {
   public static void main(String args[]) {
-    int width = 4;
+    int width = 5;
     int height = 4;
     int[][] terrain = {
-        { 1, 1, 0, 0},
-        { 0, 1, 1, 0},
-        { 0, 0, 1, 0},
-        { 1, 0, 0, 0}
+        { 0, 0, 1, 1 },
+        { 0, 0, 1, 0 },
+        { 0, 1, 1, 0 },
+        { 0, 1, 0, 0 },
+        { 1, 1, 0, 0 }
     };
 
     Conqueror conqueror = new Conqueror(terrain, width, height);
