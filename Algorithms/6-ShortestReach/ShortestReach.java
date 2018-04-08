@@ -1,6 +1,9 @@
+import utils.AlgorithmsUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 class Node {
@@ -76,15 +79,26 @@ class Graph {
 
 public class ShortestReach {
   public static void main(String args[]) {
-    Graph tree = new Graph(4);
-    tree.addEdge(1, 2);
-    tree.addEdge(1, 3);
+    List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData6/input00.txt");
+    ListIterator<String> testDataIterator = testData.listIterator();
+    int q = Integer.valueOf(testDataIterator.next());
 
-    tree.shortestReach(1);
+    for (int index = 0; index < q; index++) {
+      String[] values = testDataIterator.next().split(" ");
 
-    Graph tree2 = new Graph(3);
-    tree2.addEdge(2, 3);
+      // Create graph
+      Graph graph = new Graph(Integer.valueOf(values[0]));
+      int m = Integer.valueOf(values[1]);
 
-    tree2.shortestReach(2);
+      // read and set edges
+      for (int i = 0; i < m; i++) {
+        values = testDataIterator.next().split(" ");
+        graph.addEdge(Integer.valueOf(values[0]), Integer.valueOf(values[1]));
+      }
+
+      // Find shortest reach from node s
+      int startId = Integer.valueOf(testDataIterator.next());
+      graph.shortestReach(startId);
+    }
   }
 }
