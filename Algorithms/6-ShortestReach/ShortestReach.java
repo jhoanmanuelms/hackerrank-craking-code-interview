@@ -6,56 +6,34 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-class Node {
-  private int value;
-  private List<Node> children;
-
-  public Node(int value) {
-    this.value = value;
-    children = new ArrayList<>();
-  }
-
-  public void addChild(Node child) {
-    children.add(child);
-  }
-
-  public List<Node> getChildren() {
-    return children;
-  }
-
-  public boolean hasChildren() {
-    return !children.isEmpty();
-  }
-
-  public int getValue() {
-    return value;
-  }
-}
-
 class Graph {
-  private Map<Integer, Node> nodes;
+  private Map<Integer, List<Integer>> nodes;
 
   public Graph(int length) {
     nodes = new HashMap<>();
-    for (int i = 1; i <= length; i++) {
-      nodes.put(i, new Node(i));
+    for (int index = 1; index <= length; index++) {
+      nodes.put(index, new ArrayList<>());
     }
   }
 
   public void addEdge(int from, int to) {
-    nodes.get(from).addChild(new Node(to));
-    nodes.get(to).addChild(new Node(from));
+    nodes.get(from).add(to);
+    nodes.get(to).add(from);
   }
 
   public int pathToValue(int from, int to) {
     int path = 0;
-    Node start = nodes.get(from);
-    for (Node child : start.getChildren()) {
-      if (child.getValue() == to) {
-        path += 6;
-        break;
-      } else if(child.hasChildren()) {
-        path += pathToValue(child.getValue(), to);
+    List<Integer> children = nodes.get(from);
+    if (children.contains(to)) {
+      return 6;
+    } else {
+      for (Integer child : children) {
+        List<Integer> grandChildren = nodes.get(child);
+        if (grandChildren.isEmpty() || child == from) {
+          return 0;
+        }
+
+        path += pathToValue(child, to);
       }
     }
 
