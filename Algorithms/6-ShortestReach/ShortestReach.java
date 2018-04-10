@@ -1,63 +1,63 @@
 import utils.AlgorithmsUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
+import java.util.Queue;
+import java.util.stream.IntStream;
 
 class Graph {
-  private Map<Integer, List<Integer>> nodes;
+  List<List<Integer>> adjacentLst;
+  int size;
 
-  public Graph(int length) {
-    nodes = new HashMap<>();
-    for (int index = 1; index <= length; index++) {
-      nodes.put(index, new ArrayList<>());
-    }
+  public Graph(int size) {
+    adjacentLst = new ArrayList<>();
+    this.size = size;
+    IntStream.range(0, size).forEach(value -> adjacentLst.add(new ArrayList<>()));
   }
 
-  public void addEdge(int from, int to) {
-    nodes.get(from).add(to);
-    nodes.get(to).add(from);
+  public void addEdge(int first, int second) {
+    adjacentLst.get(first).add(second);
+    adjacentLst.get(second).add(first);
   }
 
-  public int pathToValue(int from, int to) {
-    int path = 0;
-    List<Integer> children = nodes.get(from);
-    if (children.contains(to)) {
-      return 6;
-    } else {
-      for (Integer child : children) {
-        List<Integer> grandChildren = nodes.get(child);
-        if (grandChildren.isEmpty() || child == from) {
-          return 0;
+  public int[] shortestReach(int startId) {
+    int[] distances = new int[size];
+    Arrays.fill(distances, -1);
+    Queue<Integer> que = new LinkedList<>();
+
+    que.add(startId);
+    distances[startId] = 0;
+    HashSet<Integer> seen = new HashSet<>();
+
+    seen.add(startId);
+    while(!que.isEmpty()) {
+      Integer curr = que.poll();
+      for(int node : adjacentLst.get(curr)) {
+        if(!seen.contains(node)) {
+          que.offer(node);
+          seen.add(node);
+          distances[node] = distances[curr] + 6;
         }
-
-        path += pathToValue(child, to);
       }
     }
 
-    return path;
-  }
-
-  public void shortestReach(int from) {
-    int size = nodes.size();
-    StringBuilder reaches = new StringBuilder();
-
-    for (int index = 1; index <= size; index++) {
-      if (index != from) {
-        int path = pathToValue(from, index);
-        reaches.append(path == 0 ? -1 : path).append(" ");
-      }
+    StringBuilder distancesPrinter = new StringBuilder();
+    for (int distance : distances) {
+      distancesPrinter.append(distance).append(" ");
     }
 
-    System.out.println(reaches.toString());
+    System.out.println(distancesPrinter.toString());
+    return distances;
   }
 }
 
 public class ShortestReach {
   public static void main(String args[]) {
-    List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData6/input00.txt");
+    List<String> testData = AlgorithmsUtils.readLines("AlgorithmsTestData6/input01.txt");
     ListIterator<String> testDataIterator = testData.listIterator();
     int q = Integer.valueOf(testDataIterator.next());
 
@@ -71,11 +71,11 @@ public class ShortestReach {
       // read and set edges
       for (int i = 0; i < m; i++) {
         values = testDataIterator.next().split(" ");
-        graph.addEdge(Integer.valueOf(values[0]), Integer.valueOf(values[1]));
+        graph.addEdge(Integer.valueOf(values[0]) - 1, Integer.valueOf(values[1]) - 1);
       }
 
       // Find shortest reach from node s
-      int startId = Integer.valueOf(testDataIterator.next());
+      int startId = Integer.valueOf(testDataIterator.next()) - 1;
       graph.shortestReach(startId);
     }
   }
